@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="Thumb.Hero" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Thumb Hero</name>
+    <description>
+        A reaction game with simple bars
+    </description>
+    <author email="planetoftheappsteam@gmail.com" href="">
+        Planet of the apps team
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <allow-navigation href="*" />
+    <platform name="android">
+        <preference name="loadUrlTimeoutValue" value="30000" />
+        <allow-intent href="market:*" />
+        <icon src="www/images/logo.png" />
+        <resource-file src="google-services.json" target="./google-services.json" />
+    </platform>
+    <platform name="ios">
+        <allow-intent href="itms:*" />
+        <allow-intent href="itms-apps:*" />
+    </platform>
+</widget>
