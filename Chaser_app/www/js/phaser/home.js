@@ -107,14 +107,63 @@ class HomeScreen extends Phaser.Scene{
             game.scene.start('SettingScreen');
         });
 
-        this.help = this.add.image(965,450,'Help');
+        this.help = this.add.image(965,500,'Help');
         this.help.setInteractive().on('pointerdown', () => {
             game.domContainer.style.display = 'block';
             game.scene.stop('HomeScreen');
             game.scene.start('HelpScreen');
         });
 
-        this.waitingText = this.add.text(540, 800, 'Fetching Ranking From Server...', { fixedWidth: 1000, fixedHeight: 200 })
+        this.admobButton = this.add.image(245,575,'ReviveAdmob').setScale(0.6);
+        this.admobButton.setInteractive().on('pointerdown', () => {
+            var date = new Date();
+            var month = date.getMonth();
+            if(userData.remove_admob != month){
+                AdMob.showInterstitial();
+                AdMob.prepareInterstitial({
+                    adId: admobid.interstitial,
+                    autoShow:false,
+                    isTesting: true,
+                });
+            }
+            userData.heart = (Number.parseInt(userData.heart) + 3) > 3 ? 3 : (Number.parseInt(userData.heart) + 3);
+            Client.level_end(3, 0, 0, 0);
+            this.play.setInteractive();
+            this.play.setAlpha(1);
+            for(let i=0; i<3; i++)
+            {
+                if(i+1 > userData.heart)
+                    this.hearts[i].setVisible(false);
+                else
+                    this.hearts[i].setVisible(true);
+            }
+        });
+        this.coinButton = this.add.image(675,575,'ReviveCoin').setScale(0.6);
+        this.coinButton.setInteractive().on('pointerdown', () => {
+            userData.coin = Number.parseInt(userData.coin) - 1000;
+            userData.heart = (Number.parseInt(userData.heart) + 3) > 3 ? 3 : (Number.parseInt(userData.heart) + 3);
+            Client.level_end(3, -1000, 0, 0);
+            this.play.setInteractive();
+            this.play.setAlpha(1);
+            for(let i=0; i<3; i++)
+            {
+                if(i+1 > userData.heart)
+                    this.hearts[i].setVisible(false);
+                else
+                    this.hearts[i].setVisible(true);
+            }
+            this.coinText.setText(userData.coin);
+            if(Number.parseInt(userData.coin)<1000){
+                this.coinButton.disableInteractive();
+                this.coinButton.setAlpha(0.5);
+            }
+        });
+        if(Number.parseInt(userData.coin)<1000){
+            this.coinButton.disableInteractive();
+            this.coinButton.setAlpha(0.5);
+        }
+
+        this.waitingText = this.add.text(540, 900, 'Fetching Ranking From Server...', { fixedWidth: 1000, fixedHeight: 200 })
         .setStyle({
             fontSize: '64px',
             fontFamily: 'RR',
@@ -132,8 +181,8 @@ class HomeScreen extends Phaser.Scene{
         {
             this.play.disableInteractive();
             this.play.setAlpha(0.5);
-            toast_error(this, 'Please Revive in the setting screen.');
-            this.tweens.add({targets:this.setting, duration:1000, loop: -1, alpha: 0.5, ease: 'Linear', yoyo: true});
+            toast_error(this, 'Please Revive by admob or coin.');
+            // this.tweens.add({targets:this.setting, duration:1000, loop: -1, alpha: 0.5, ease: 'Linear', yoyo: true});
         }
     }
     
@@ -149,9 +198,9 @@ class HomeScreen extends Phaser.Scene{
             this.waitingText.destroy();
             this.rank_list = this.rexUI.add.scrollablePanel({
                 x: 540,
-                y: 1200,
+                y: 1250,
                 width: 1000,
-                height: 1300,
+                height: 1200,
     
                 scrollMode: 0,
     
@@ -226,7 +275,7 @@ class HomeScreen extends Phaser.Scene{
             {
                 sizer.add(this.add.text(0, 0, (i+1) + ' - ' + rank_list[i].username + ' (Lv:' + rank_list[i].level + ',Pt:' + rank_list[i].point + ')', { fixedWidth: 900, fixedHeight: 80 })
                 .setStyle({
-                    fontSize: '64px',
+                    fontSize: '48px',
                     fontFamily: 'RR',
                     fontWeight: 'bold',
                     color: '#1fbae1',
@@ -236,7 +285,7 @@ class HomeScreen extends Phaser.Scene{
             else{
                 sizer.add(this.add.text(0, 0, (i+1) + ' - ' + rank_list[i].username + ' (Lv:' + rank_list[i].level + ',Pt:' + rank_list[i].point + ')', { fixedWidth: 900, fixedHeight: 80 })
                 .setStyle({
-                    fontSize: '64px',
+                    fontSize: '48px',
                     fontFamily: 'RR',
                     fontWeight: 'bold',
                     color: '#ffffff',
@@ -247,7 +296,7 @@ class HomeScreen extends Phaser.Scene{
             if(my_rank < 10){
                 sizer.add(this.add.text(0, 0, '   ...   ', { fixedWidth: 900, fixedHeight: 80 })
                 .setStyle({
-                    fontSize: '64px',
+                    fontSize: '48px',
                     fontFamily: 'RR',
                     fontWeight: 'bold',
                     color: '#ffffff',
@@ -255,7 +304,7 @@ class HomeScreen extends Phaser.Scene{
             }
             sizer.add(this.add.text(0, 0, (my_rank+1) + ' - ' + userData.username + ' (Lv:' + userData.level + ',Pt:' + userData.point + ')', { fixedWidth: 900, fixedHeight: 80 })
             .setStyle({
-                fontSize: '64px',
+                fontSize: '48px',
                 fontFamily: 'RR',
                 fontWeight: 'bold',
                 color: '#ffffff',

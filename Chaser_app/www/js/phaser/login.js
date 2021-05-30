@@ -24,6 +24,7 @@ class LoginScreen extends Phaser.Scene{
 
         this.load.image("Logo", "./images/logo.png");
         this.load.image("Login", "./images/login.png");
+        this.load.image("Guest", "./images/guest.png");
         this.load.image("SignUp", "./images/signup.png");
         this.load.image("InputBack", "./images/input_back.png");
         this.load.image("Panel", "./images/user_panel.png");
@@ -131,6 +132,11 @@ class LoginScreen extends Phaser.Scene{
         this.loginButton = this.add.image(540,1200,'Login');
         this.loginButton.setInteractive().on('pointerdown', () => {
             Client.login(this.userName.text, this.password.text);
+        });
+
+        this.guestButton = this.add.image(540,1350,'Guest');
+        this.guestButton.setInteractive().on('pointerdown', () => {
+            Client.guest();
         });
 
         this.registerText = this.add.text(540, 1500, 'SignUp Now', { fixedWidth: 500, fixedHeight: 120 })

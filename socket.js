@@ -59,6 +59,20 @@ const exportedMethods = {
                 }
             });
 
+            socket.on('guest', () => {
+                users.guestlogin().then((result) => {
+                    if (result) {
+                        players[result.username] = socket.id;
+                        socket.handshake.session.username = result.username;
+                        socket.handshake.session.save();
+                        // socket.emit('login', { result: result, stripe_key: "pk_live_51IhyPDAWkB06UtUHCSbOqJu4pYMzAsSXYeJGtrDhysU5OudjQOPedGAhQqhxciNvabMSgdaPjcqaSPEA91Th8Mk900qzAdTxkd"});
+                        socket.emit('login', { result: result, stripe_key: "pk_test_51IhyPDAWkB06UtUHhIqCmHf2Yj9XfljP2HmhYgTMXaa3MZGhAHtyUHqJuXtOL1sAwaSvdKPyaIJx0Ki45UleW5xu00ieI01k3E"});
+                    } else {
+                        socket.emit('login', { result: false });
+                    }
+                });
+            });
+
             socket.on('logout', (data) => {
                 // REQUIRE INFO: data.username
                 console.log('logout request recevied');

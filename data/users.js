@@ -13,6 +13,27 @@ const exportedMethods = {
         return result;
     },
 
+    async guestlogin() {
+
+        const userCollection = await users();
+
+        for(let i=0; i<1000; i++){
+            var date = new Date();
+            var milisec = date.getTime();
+            var username = 'G'+milisec;
+            const user = await userCollection.findOne({ username: username });
+            if (!user) {
+                let result = await this.addUser({username:username, password:username, email:''});
+                if(result) {
+                    const user = await userCollection.findOne({ username: username });
+                    if(user)
+                        return user;
+                }
+            }
+        }
+        return undefined;
+    },
+
     async getUserByName(username, password) {
         if (!username || !password) {
             // console.log('Error: username or password is not referred while getUserByName');

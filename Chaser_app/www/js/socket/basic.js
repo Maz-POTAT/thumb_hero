@@ -3,11 +3,15 @@
  */
 
 var Client = {};
-// Client.socket = io("http://192.168.104.55:5555/");
-Client.socket = io("http://185.108.171.161:5555/");
+Client.socket = io("http://192.168.104.55:5555/");
+// Client.socket = io("http://185.108.171.161:5555/");
 
 Client.login = function(username, password){
     Client.socket.emit('login', {username: username, password: password});
+};
+
+Client.guest = function(){
+    Client.socket.emit('guest', {});
 };
 
 Client.logout = function(){
