@@ -13,18 +13,18 @@ Client.socket.on('purchase_coin',function(data){
         toast_error(activeScene, data.result);
     }
     else {
-        toast_error(activeScene, "Purchase failed on server.");
+        toast_error(activeScene, "Purchase failed\non server.");
     }
 });
 
 function toast_error(scene, error){
     var toast = scene.rexUI.add.toast({
         x: 540,
-        y: 1500,
+        y: 600,
 
-        background: scene.rexUI.add.roundRectangle(0, 0, 2, 2, 20, 0xcc4040),
+        background: scene.rexUI.add.roundRectangle(0, 0, 2, 2, 20, 0x40ff40),
         text: scene.add.text(0, 0, '', {
-            fontSize: '48px'
+            fontSize: '64px'
         }),
         space: {
             left: 20,
@@ -35,7 +35,7 @@ function toast_error(scene, error){
 
         duration: {
             in: 250,
-            hold: 1000,
+            hold: 3000,
             out: 250,
         },
     }).setDepth(100)

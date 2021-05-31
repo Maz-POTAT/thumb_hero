@@ -214,13 +214,13 @@ class StripeScreen extends Phaser.Scene{
     
                 function onSuccess(tokenId) {
                     let activeScene = game.scene.getScenes(true)[0];
-                    toast_error(activeScene, "Purchase requested to server.");
+                    toast_error(activeScene, "Purchase requested\nto server.");
                     Client.purchase_coin(tokenId, method);
                 }
                  
                 function onError(errorMessage) {
                     let activeScene = game.scene.getScenes(true)[0];
-                    toast_error(activeScene, "Purchase failed on stripe.");
+                    toast_error(activeScene, "Purchase failed\non stripe.");
                 }
                  
                 cordova.plugins.stripe.createCardToken(card, onSuccess, onError);

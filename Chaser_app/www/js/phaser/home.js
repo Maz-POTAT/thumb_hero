@@ -181,7 +181,7 @@ class HomeScreen extends Phaser.Scene{
         {
             this.play.disableInteractive();
             this.play.setAlpha(0.5);
-            toast_error(this, 'Please Revive by admob or coin.');
+            toast_error(this, 'Please Revive by\nadmob or coin.');
             // this.tweens.add({targets:this.setting, duration:1000, loop: -1, alpha: 0.5, ease: 'Linear', yoyo: true});
         }
     }
