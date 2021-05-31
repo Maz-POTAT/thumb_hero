@@ -44,9 +44,9 @@ class SettingScreen extends Phaser.Scene{
         }
 
         this.coin = this.add.image(700,140,'Coin').setScale(0.15);
-        this.coinText = this.add.text(900, 140, userData.coin, { fixedWidth: 300, fixedHeight: 70 })
+        this.coinText = this.add.text(900, 140, userData.coin, { fixedWidth: 300})
         .setStyle({
-            fontSize: '64px',
+            fontSize: '40px',
             fontFamily: 'RR',
             fontWeight: 'bold',
             align: "center",
@@ -54,10 +54,10 @@ class SettingScreen extends Phaser.Scene{
         })
         .setOrigin(0.5,0.5);
 
-        this.point = this.add.image(700,260,'Point').setScale(0.15);
-        this.pointText = this.add.text(900, 260, userData.point, { fixedWidth: 300, fixedHeight: 70 })
+        // this.point = this.add.image(700,260,'Point').setScale(0.15);
+        this.pointText = this.add.text(850, 260, 'Lv:' + userData.level + '(' + getTimeTextFromMs(userData.point)+ ')', { fixedWidth: 400})
         .setStyle({
-            fontSize: '64px',
+            fontSize: '40px',
             fontFamily: 'RR',
             fontWeight: 'bold',
             align: "center",
@@ -255,7 +255,7 @@ class SettingScreen extends Phaser.Scene{
                 this.hearts[i].setVisible(true);
         }
         this.coinText.setText(userData.coin);
-        this.pointText.setText(userData.point);
+        this.pointText.setText('Lv:' + userData.level + '(' + getTimeTextFromMs(userData.point)+ ')');
 
         if(Number.parseInt(userData.coin)>=1000){
             this.coinButton.setInteractive();

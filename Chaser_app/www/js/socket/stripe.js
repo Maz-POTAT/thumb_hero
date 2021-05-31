@@ -20,9 +20,9 @@ Client.socket.on('purchase_coin',function(data){
 function toast_error(scene, error){
     var toast = scene.rexUI.add.toast({
         x: 540,
-        y: 600,
+        y: 400,
 
-        background: scene.rexUI.add.roundRectangle(0, 0, 2, 2, 20, 0x40ff40),
+        background: scene.rexUI.add.roundRectangle(0, 0, 2, 2, 20, 0x40cc40),
         text: scene.add.text(0, 0, '', {
             fontSize: '64px'
         }),

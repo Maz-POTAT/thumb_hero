@@ -118,9 +118,14 @@ const exportedMethods = {
 
         const updateduserData = user;
 
-        if (data.point) updateduserData.point = Number.parseInt(updateduserData.point) + data.point;
         if (data.coin) updateduserData.coin = Number.parseInt(updateduserData.coin) + data.coin;
-        if (data.level > updateduserData.level) updateduserData.level = data.level;
+        if (data.level > updateduserData.level && data.point>0){
+            updateduserData.level = data.level;
+            updateduserData.point = data.point;
+        } 
+        else if (data.level == updateduserData.level && data.point < updateduserData.point && data.point>0){
+            updateduserData.point = data.point;
+        }
         if (data.heart!=0)
         {
             updateduserData.heart += data.heart;
@@ -312,7 +317,7 @@ const exportedMethods = {
 
         const userCollection = await users();
         const my_rank = await userCollection.aggregate(
-            { $sort : {"level": -1, "point" : -1}},
+            { $sort : {"level": -1, "point" : 1}},
             {
                 "$group": {
                     "_id": false,
@@ -339,7 +344,7 @@ const exportedMethods = {
             },
             { $sort : {"ranking" : 1}}).toArray();
 
-        const rank_list = await userCollection.find().sort({level: -1, point:-1}).limit(10).toArray();
+        const rank_list = await userCollection.find().sort({level: -1, point:1}).limit(10).toArray();
         return {my_rank: my_rank, rank_list: rank_list};
     },
 };

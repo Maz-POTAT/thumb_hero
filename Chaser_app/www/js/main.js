@@ -10,6 +10,7 @@ var target_width = 10;
 var target_position = 0;
 var item_type = -1;
 var level = 0;
+var elapsedTime = 0;
 var point = 0;
 var coin = 0;
 var revive_count = 0;
@@ -34,3 +35,15 @@ const config = {
 var game = new Phaser.Game(config);
 
 game.scene.start('LoginScreen');
+
+function getTimeTextFromMs(msSec){
+    let sec = Math.floor(msSec/1000);
+    let ms = Math.floor((msSec%1000)/10);
+    let min = Math.floor(sec/60);
+    sec = sec%60;
+    return [
+        String(min).padStart(2, '0'),
+        String(sec).padStart(2, '0'),
+        String(ms).padStart(2, '0'),
+      ].join(':');
+}

@@ -43,9 +43,9 @@ class HomeScreen extends Phaser.Scene{
         }
 
         this.coin = this.add.image(700,140,'Coin').setScale(0.15);
-        this.coinText = this.add.text(900, 140, userData.coin, { fixedWidth: 300, fixedHeight: 70 })
+        this.coinText = this.add.text(900, 140, userData.coin, { fixedWidth: 300})
         .setStyle({
-            fontSize: '64px',
+            fontSize: '40px',
             fontFamily: 'RR',
             fontWeight: 'bold',
             align: "center",
@@ -53,10 +53,10 @@ class HomeScreen extends Phaser.Scene{
         })
         .setOrigin(0.5,0.5);
 
-        this.point = this.add.image(700,260,'Point').setScale(0.15);
-        this.pointText = this.add.text(900, 260, userData.point, { fixedWidth: 300, fixedHeight: 70 })
+        // this.point = this.add.image(700,260,'Point').setScale(0.15);
+        this.pointText = this.add.text(850, 260, 'Lv:' + userData.level + '(' + getTimeTextFromMs(userData.point)+ ')', { fixedWidth: 400})
         .setStyle({
-            fontSize: '64px',
+            fontSize: '40px',
             fontFamily: 'RR',
             fontWeight: 'bold',
             align: "center",
@@ -72,6 +72,7 @@ class HomeScreen extends Phaser.Scene{
             target_position = 320;
             path_index = 0;
             level = 1;
+            elapsedTime = 0;
             revive_count = 0;
             // //For Test
             // level = 50;
@@ -273,7 +274,7 @@ class HomeScreen extends Phaser.Scene{
         for(let i=0; i<rank_list.length; i++){
             if(rank_list[i].username == userData.username)
             {
-                sizer.add(this.add.text(0, 0, (i+1) + ' - ' + rank_list[i].username + ' (Lv:' + rank_list[i].level + ',Pt:' + rank_list[i].point + ')', { fixedWidth: 900, fixedHeight: 80 })
+                sizer.add(this.add.text(0, 0, (i+1) + ' - ' + rank_list[i].username + ' (Lv:' + rank_list[i].level + ',' + getTimeTextFromMs(rank_list[i].point) + ')', { fixedWidth: 900, fixedHeight: 80 })
                 .setStyle({
                     fontSize: '48px',
                     fontFamily: 'RR',
@@ -283,7 +284,7 @@ class HomeScreen extends Phaser.Scene{
                 bInRanking = true;
             }
             else{
-                sizer.add(this.add.text(0, 0, (i+1) + ' - ' + rank_list[i].username + ' (Lv:' + rank_list[i].level + ',Pt:' + rank_list[i].point + ')', { fixedWidth: 900, fixedHeight: 80 })
+                sizer.add(this.add.text(0, 0, (i+1) + ' - ' + rank_list[i].username + ' (Lv:' + rank_list[i].level + ',' + getTimeTextFromMs(rank_list[i].point) + ')', { fixedWidth: 900, fixedHeight: 80 })
                 .setStyle({
                     fontSize: '48px',
                     fontFamily: 'RR',
@@ -302,7 +303,7 @@ class HomeScreen extends Phaser.Scene{
                     color: '#ffffff',
                 }));
             }
-            sizer.add(this.add.text(0, 0, (my_rank+1) + ' - ' + userData.username + ' (Lv:' + userData.level + ',Pt:' + userData.point + ')', { fixedWidth: 900, fixedHeight: 80 })
+            sizer.add(this.add.text(0, 0, (my_rank+1) + ' - ' + userData.username + ' (Lv:' + userData.level + ',' + getTimeTextFromMs(userData.point) + ')', { fixedWidth: 900, fixedHeight: 80 })
             .setStyle({
                 fontSize: '48px',
                 fontFamily: 'RR',
@@ -325,7 +326,7 @@ class HomeScreen extends Phaser.Scene{
                 this.hearts[i].setVisible(true);
         }
         this.coinText.setText(userData.coin);
-        this.pointText.setText(userData.point);
+        this.pointText.setText('Lv:' + userData.level + '(' + getTimeTextFromMs(userData.point)+ ')');
         if(userData.heart == 0)
         {
             this.play.disableInteractive();
