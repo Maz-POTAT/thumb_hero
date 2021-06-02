@@ -46,7 +46,7 @@ Client.socket.on('login',function(data){
     }
     else
     {
-        game.scene.getScene('LoginScreen').toast_failed();
+        toast_error(game.scene.getScene('LoginScreen'), "Login Failed");
         console.log('failed');
     }
 });
@@ -56,12 +56,12 @@ Client.socket.on('register',function(data){
     {
         game.scene.stop('RegisterScreen');
         game.scene.start('LoginScreen');
-        game.scene.getScene('LoginScreen').toast_register_succeed();
+        toast_error(game.scene.getScene('LoginScreen'), "Registration Succeed");
         console.log('success');
     }
     else
     {
-        game.scene.getScene('RegisterScreen').toast_failed();
+        toast_error(game.scene.getScene('RegisterScreen'), "Registration Failed");
         console.log('failed');
     }
 });

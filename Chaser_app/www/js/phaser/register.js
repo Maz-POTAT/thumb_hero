@@ -91,6 +91,8 @@ class RegisterScreen extends Phaser.Scene{
 
         this.registerButton = this.add.image(540,1200,'SignUp');
         this.registerButton.setInteractive().on('pointerdown', () => {
+            window.localStorage.removeItem("UserName");
+            window.localStorage.removeItem("Password");
             Client.register(this.userName.text, this.email.text, this.password.text);
         });
 
