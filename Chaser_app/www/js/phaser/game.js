@@ -73,7 +73,8 @@ class GameScreen extends Phaser.Scene{
         .setOrigin(0.5,0.5);
 
         // this.point = this.add.image(700,260,'Point').setScale(0.15);
-        this.pointText = this.add.text(850, 260, 'Lv:' + userData.level + '(' + getTimeTextFromMs(userData.point)+ ')', { fixedWidth: 400})
+        this.showTime = false;
+        this.pointText = this.add.text(850, 260, '', { fixedWidth: 400})
         .setStyle({
             fontSize: '40px',
             fontFamily: 'RR',
@@ -106,6 +107,11 @@ class GameScreen extends Phaser.Scene{
         this.initLevel();
     }
     update(){
+        if(this.showTime)
+        {
+            let curDate = new Date();
+            this.pointText.setText(getTimeTextFromMs(elapsedTime + (curDate.getTime() - this.startTime)));
+        }
         for(let index = 0; index<this.triangle.length; index++)
         {
             if(Math.random() < 0.05){
@@ -182,6 +188,7 @@ class GameScreen extends Phaser.Scene{
             this.guideText.destroy();
             let curDate = new Date();
             this.startTime = curDate.getTime();
+            this.showTime = true;
         }
 
         if(this.cross){
@@ -257,6 +264,7 @@ class GameScreen extends Phaser.Scene{
     }
 
     checkResult(){
+        this.showTime = false;
         this.timer.remove();
         this.time.removeEvent(this.timer);
         let bPass = false;
