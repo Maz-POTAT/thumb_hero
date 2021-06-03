@@ -294,7 +294,7 @@ class HomeScreen extends Phaser.Scene{
             }
         }
         if(!bInRanking){
-            if(my_rank < 10){
+            if(my_rank.ranking < 10){
                 sizer.add(this.add.text(0, 0, '   ...   ', { fixedWidth: 900, fixedHeight: 80 })
                 .setStyle({
                     fontSize: '48px',
@@ -303,7 +303,7 @@ class HomeScreen extends Phaser.Scene{
                     color: '#ffffff',
                 }));
             }
-            sizer.add(this.add.text(0, 0, (my_rank+1) + ' - ' + userData.username + ' (Lv:' + userData.level + ',' + getTimeTextFromMs(userData.point) + ')', { fixedWidth: 900, fixedHeight: 80 })
+            sizer.add(this.add.text(0, 0, (my_rank.ranking+1) + ' - ' + userData.username + ' (Lv:' + userData.level + ',' + getTimeTextFromMs(userData.point) + ')', { fixedWidth: 900, fixedHeight: 80 })
             .setStyle({
                 fontSize: '48px',
                 fontFamily: 'RR',

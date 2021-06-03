@@ -1,4 +1,8 @@
 const data = require('./data');
+const gcm = require('node-gcm'); //Google Cloud Messaging
+const gcmKey = 'AAAAkjV9r0s:APA91bGH95ayi0TGgKSIybhQG_qu1fJfWrQgcfTqqS0YJ0qCHtpPrmtnTq5YmD5-tjIotWFfnAwcsAES5tbS17RuzM3wwap3yWb0vLAbS9IXr-4G6mZvyw2nmqPFk3WStFa6R8RyQJvF'; // Your gcm key in quotes
+const sender = new gcm.Sender(gcmKey);
+
 const users = data.users;
 
 const players = {};
@@ -105,6 +109,12 @@ const exportedMethods = {
                 });
             });
 
+            socket.on('register_device', (data) => {
+                console.log('register device request recevied : ', data);
+                users.register_device(data.username, data.device_token).then((result) => {
+                });
+            });
+
             socket.on('level_end', (data) => {
                 console.log('level_end request recevied : ', data);
                 users.addUserValue(data.username, data.result).then((result) => {
@@ -133,7 +143,23 @@ const exportedMethods = {
                 console.log('ranking request recevied : ', data);
                 users.ranking(data.username).then((result) => {
                     if(result){
-                        socket.emit('ranking', {result: true, user: result.user, rank_list:result.rank_list});
+                        socket.emit('ranking', {result: true, my_rank: result.my_rank[0], rank_list:result.rank_list});
+
+                        console.log(result.my_rank[0], result.user);
+                        var message = new gcm.Message();
+                        message.addData({
+                          title: 'New Rank',
+                          body: 'Your current rank is ' + result.my_rank[0].ranking,
+                          otherProperty: true,
+                        });
+                        sender.send(message, {registrationIds: [result.user.device_token]}, (err) => {
+                          if (err) {
+                            console.error(err);
+                          }
+                          else {
+                            console.log('Sent');
+                          }
+                        });
                     } else {
                         socket.emit('ranking', {result: false, error: `Error occurred while get ranking in db`});
                     }

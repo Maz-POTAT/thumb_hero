@@ -24,6 +24,7 @@
         "fs": "0.0.1-security",
         "mongod": "^2.0.0",
         "mongodb": "^3.6.5",
+        "node-gcm": "^1.0.4",
         "socket.io": "^4.0.1",
         "stripe": "^8.144.0",
         "util": "^0.12.3"

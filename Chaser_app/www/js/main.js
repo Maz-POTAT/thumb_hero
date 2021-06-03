@@ -5,6 +5,7 @@
 
 var userData = {};
 var stripe_key = "";
+var device_token = '';
 
 var target_width = 10;
 var target_position = 0;
@@ -15,7 +16,6 @@ var point = 0;
 var coin = 0;
 var revive_count = 0;
 var path_index = 0;
-
 const config = {
     type: Phaser.WEBGL,
     scale: {
@@ -46,4 +46,29 @@ function getTimeTextFromMs(msSec){
         String(sec).padStart(2, '0'),
         String(ms).padStart(2, '0'),
       ].join(':');
+}
+document.addEventListener('deviceready', onDeviceReady, false);
+
+function onDeviceReady() {
+    console.log("device ready");
+    var push = PushNotification.init({
+        android: {}
+    });
+
+    push.on('registration', function(data) {
+        // data.registrationId
+        device_token = data.registrationId;
+        if(userData.username)
+            Client.register_device();
+        console.log(data.registrationId);
+    });
+
+    push.on('notification', function(data) {
+        let activeScene = game.scene.getScenes(true)[0];
+        toast_error(activeScene, data.title + '\n' + data.message);
+    });
+
+    push.on('error', function(e) {
+        console.log(e.message)
+    });
 }

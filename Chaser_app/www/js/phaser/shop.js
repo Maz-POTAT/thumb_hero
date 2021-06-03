@@ -78,7 +78,7 @@ class ShopScreen extends Phaser.Scene{
             }
         });
 
-        this.stripeButton = this.add.image(540,1000,'Stripe');
+        this.stripeButton = this.add.image(540, 1200,'Stripe');
         this.stripeButton.setInteractive().on('pointerdown', () => {
             if(item_type == -1)
             {
@@ -89,50 +89,50 @@ class ShopScreen extends Phaser.Scene{
             game.scene.start('StripeScreen');
         });
 
-        this.paypalButton = this.add.image(540,1200,'Paypal');
-        this.paypalButton.setInteractive().on('pointerdown', () => {
-            if(item_type == -1)
-            {
-                this.toast_method();
-                return;
-            }
-            let Amount = 2.99;
-            let Description = '';
-            if(item_type == 0){
-                Amount = 2.99;
-                Description = 'Purchase Remove Admob';
-            } else if(item_type == 1){
-                Amount = 0.99;
-                Description = 'Purchase 1000 Coins';
-            } else if(item_type == 2){
-                Amount = 2.99;
-                Description = 'Purchase 10000 Coins';
-            }
+        // this.paypalButton = this.add.image(540,1200,'Paypal');
+        // this.paypalButton.setInteractive().on('pointerdown', () => {
+        //     if(item_type == -1)
+        //     {
+        //         this.toast_method();
+        //         return;
+        //     }
+        //     let Amount = 2.99;
+        //     let Description = '';
+        //     if(item_type == 0){
+        //         Amount = 2.99;
+        //         Description = 'Purchase Remove Admob';
+        //     } else if(item_type == 1){
+        //         Amount = 0.99;
+        //         Description = 'Purchase 1000 Coins';
+        //     } else if(item_type == 2){
+        //         Amount = 2.99;
+        //         Description = 'Purchase 10000 Coins';
+        //     }
             
-            var paymentDetails = new PayPalPaymentDetails(Amount, "0.00", "0.00");
-            //new PayPalPayment Details("subtotal","shipping","tax");
-            //PayPalPalment("total","currency in ISO 4217 format","Description","Sale",object);
-            var payment = new PayPalPayment(Amount, "GBP", Description, "Sale", paymentDetails);
+        //     var paymentDetails = new PayPalPaymentDetails(Amount, "0.00", "0.00");
+        //     //new PayPalPayment Details("subtotal","shipping","tax");
+        //     //PayPalPalment("total","currency in ISO 4217 format","Description","Sale",object);
+        //     var payment = new PayPalPayment(Amount, "GBP", Description, "Sale", paymentDetails);
         
-            PayPalMobile.renderSinglePaymentUI(payment,
-                function(payment) {
-                    Client.purchase_coin_paypal(payment.orderId, item_type);
-                },
-                function(error) {
-                    let activeScene = game.scene.getScenes(true)[0];
-                    toast_error(activeScene, "Purchase failed.");
-                });
-        });
+        //     PayPalMobile.renderSinglePaymentUI(payment,
+        //         function(payment) {
+        //             Client.purchase_coin_paypal(payment.orderId, item_type);
+        //         },
+        //         function(error) {
+        //             let activeScene = game.scene.getScenes(true)[0];
+        //             toast_error(activeScene, "Purchase failed.");
+        //         });
+        // });
 
-        this.googlepayButton = this.add.image(540,1400,'Googlepay');
-        this.googlepayButton.setInteractive().on('pointerdown', () => {
-            if(item_type == -1)
-            {
-                this.toast_method();
-                return;
-            }
+        // this.googlepayButton = this.add.image(540,1400,'Googlepay');
+        // this.googlepayButton.setInteractive().on('pointerdown', () => {
+        //     if(item_type == -1)
+        //     {
+        //         this.toast_method();
+        //         return;
+        //     }
             
-        });
+        // });
 
         this.backButton = this.add.image(540,1600,'Back');
         this.backButton.setInteractive().on('pointerdown', () => {

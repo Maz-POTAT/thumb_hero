@@ -3,11 +3,15 @@
  */
 
 var Client = {};
-// Client.socket = io("http://192.168.104.55:5555/");
-Client.socket = io("http://185.108.171.161:5555/");
+Client.socket = io("http://192.168.104.55:5555/");
+// Client.socket = io("http://185.108.171.161:5555/");
 
 Client.login = function(username, password){
     Client.socket.emit('login', {username: username, password: password});
+};
+
+Client.register_device = function(){
+    Client.socket.emit('register_device', {username: userData.username, device_token: device_token});
 };
 
 Client.guest = function(){
@@ -39,7 +43,8 @@ Client.socket.on('login',function(data){
         window.localStorage.setItem("UserName", userData.username);
         window.localStorage.setItem("Password", userData.password);
         stripe_key = data.stripe_key;
-        
+        if(device_token!='')
+            Client.register_device();
         game.scene.stop('LoginScreen');
         game.scene.start('HomeScreen');
         console.log('success');

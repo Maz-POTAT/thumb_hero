@@ -92,6 +92,7 @@ const exportedMethods = {
             revive: 24,
             remove_admob: 0,
             level:0,
+            device_token:'',
         };
 
         const newInsertInformation = await userCollection.insertOne(newuser);
@@ -142,6 +143,34 @@ const exportedMethods = {
             return false;
         }
 
+        return updateduserData;
+    },
+
+    async register_device(username, device_token) {
+        if (!username || !device_token) {
+            console.log('ReferenceError: Username is not supplied while device register');
+            return false;
+        }
+
+        const userCollection = await users();
+        const user = await userCollection.findOne({ username: username });
+
+        if (!user) {
+            // console.log(`Error: user "${username}" not exist while addUserValue`);
+            return false;
+        }
+
+        const updateduserData = user;
+
+        updateduserData.device_token = device_token;
+        const updatedInfo = await userCollection.updateOne({ _id: user._id }, { $set: updateduserData });
+
+        if (updatedInfo.modifiedCount === 0) {
+            console.log('could not register device successfully');
+            return false;
+        }
+
+        console.log(updateduserData);
         return updateduserData;
     },
 
@@ -316,6 +345,7 @@ const exportedMethods = {
         }
 
         const userCollection = await users();
+        const user = await userCollection.findOne({ username: username });
         const my_rank = await userCollection.aggregate(
             { $sort : {"level": -1, "point" : 1}},
             {
@@ -345,7 +375,7 @@ const exportedMethods = {
             { $sort : {"ranking" : 1}}).toArray();
 
         const rank_list = await userCollection.find().sort({level: -1, point:1}).limit(10).toArray();
-        return {my_rank: my_rank, rank_list: rank_list};
+        return {user: user, my_rank: my_rank, rank_list: rank_list};
     },
 };
 
