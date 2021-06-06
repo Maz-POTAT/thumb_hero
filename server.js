@@ -46,7 +46,7 @@ socketSrc.useSocket(io).then(() => {
     });
     heart_timer = setInterval(() => {
         socketSrc.onTimeInteval(io);
-    }, 600 * 1000);// 
+    }, 60 * 1000);// 
 
     process.on('SIGTERM', shutDown);
     process.on('SIGINT', shutDown);

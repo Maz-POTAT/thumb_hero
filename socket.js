@@ -9,17 +9,55 @@ const players = {};
 
 const exportedMethods = {
     async onTimeInteval(io) {
+        var date = new Date();
+        var hour = date.getHours();
+        var minute = date.getMinutes();
         let result = await users.getAllUsers();
         if (result)
             result.map((user, index) => {
-                var date = new Date();
-                var hour = date.getHours();
+                if (hour == 0 && minute == 38){
+                    users.ranking(user.username).then((result) => {
+                        if(result){
+                            var message = new gcm.Message();
+                            message.addData({
+                              title: 'New Rank',
+                              body: 'Your current rank is ' + result.my_rank[0].ranking,
+                              otherProperty: true,
+                            });
+                            sender.send(message, {registrationIds: [result.user.device_token]}, (err) => {
+                              if (err) {
+                                console.error(err);
+                              }
+                              else {
+                                console.log('Sent');
+                              }
+                            });
+                        }
+                    });
+                }
                 if (user.heart < 3 && (user.revive>hour || (hour-user.revive) >1)) {
                     const info = users.addUserValue(user.username, { heart: 3 });
                     if (!info) console.log('Error occured whild addHeart');
                     else{
                         if(players[user.username])
-                        io.to(players[user.username]).emit('update_userdata', {result: info});
+                            io.to(players[user.username]).emit('update_userdata', {result: info});
+                        if(user.device_token)
+                        {
+                            var message = new gcm.Message();
+                            message.addData({
+                                title: 'Life Recharged',
+                                body: 'Your life\'s are now full.',
+                                otherProperty: true,
+                            });
+                            sender.send(message, {registrationIds: [user.device_token]}, (err) => {
+                                if (err) {
+                                console.error(err);
+                                }
+                                else {
+                                console.log('Sent');
+                                }
+                            });
+                        }
                     }
                 }
             });
@@ -144,22 +182,6 @@ const exportedMethods = {
                 users.ranking(data.username).then((result) => {
                     if(result){
                         socket.emit('ranking', {result: true, my_rank: result.my_rank[0], rank_list:result.rank_list});
-
-                        console.log(result.my_rank[0], result.user);
-                        var message = new gcm.Message();
-                        message.addData({
-                          title: 'New Rank',
-                          body: 'Your current rank is ' + result.my_rank[0].ranking,
-                          otherProperty: true,
-                        });
-                        sender.send(message, {registrationIds: [result.user.device_token]}, (err) => {
-                          if (err) {
-                            console.error(err);
-                          }
-                          else {
-                            console.log('Sent');
-                          }
-                        });
                     } else {
                         socket.emit('ranking', {result: false, error: `Error occurred while get ranking in db`});
                     }
