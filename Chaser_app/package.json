@@ -28,7 +28,7 @@
       "cordova-plugin-whitelist": {},
       "cordova-plugin-stripe": {},
       "cordova-plugin-admobpro": {
-        "ADMOB_APP_ID": "thumb_hero"
+        "ADMOB_APP_ID": "ca-app-pub-8779143713246389~2168877819"
       }
     },
     "platforms": [

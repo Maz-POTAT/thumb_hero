@@ -120,11 +120,10 @@ class HomeScreen extends Phaser.Scene{
             var date = new Date();
             var month = date.getMonth();
             if(userData.remove_admob != month){
-                AdMob.showInterstitial();
-                AdMob.prepareInterstitial({
+                AdMob.showRewardVideoAd();
+                AdMob.prepareRewardVideoAd({
                     adId: admobid.interstitial,
                     autoShow:false,
-                    isTesting: true,
                 });
             }
             userData.heart = (Number.parseInt(userData.heart) + 3) > 3 ? 3 : (Number.parseInt(userData.heart) + 3);

@@ -15,13 +15,13 @@ const exportedMethods = {
         let result = await users.getAllUsers();
         if (result)
             result.map((user, index) => {
-                if (hour == 0 && minute == 38){
+                if (hour == 18 && minute == 00){
                     users.ranking(user.username).then((result) => {
                         if(result){
                             var message = new gcm.Message();
                             message.addData({
                               title: 'New Rank',
-                              body: 'Your current rank is ' + result.my_rank[0].ranking,
+                              body: 'Your current rank is ' + result.my_rank[0].ranking+1,
                               otherProperty: true,
                             });
                             sender.send(message, {registrationIds: [result.user.device_token]}, (err) => {

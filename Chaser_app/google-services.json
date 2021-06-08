@@ -7,18 +7,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:627962654539:android:6a16bffd22ea77bf32c2ce",
+        "mobilesdk_app_id": "1:627962654539:android:ece07b7608916a4e32c2ce",
         "android_client_info": {
-          "package_name": "Thumb.Hero"
+          "package_name": "thumb.hero"
         }
       },
       "oauth_client": [
         {
-          "client_id": "627962654539-qse10nbk0tie6g4up2hjk4u27hraanhn.apps.googleusercontent.com",
+          "client_id": "627962654539-qi91573bvtveh65sqtntst00vev5su80.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "Thumb.Hero",
-            "certificate_hash": "2ab02db77aa7afab0ffd1215ead1c8d809a9271e"
+            "package_name": "thumb.hero",
+            "certificate_hash": "cac4f265d048b573b03a092c9d53aebce884f74f"
           }
         },
         {
