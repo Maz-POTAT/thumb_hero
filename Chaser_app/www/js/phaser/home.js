@@ -101,6 +101,11 @@ class HomeScreen extends Phaser.Scene{
             game.scene.stop('HomeScreen');
             game.scene.start('GameScreen');
         });
+
+        if(event_mode && !userData.event_joined){
+            this.play.setAlpha(0.5).disableInteractive();
+        }
+
         this.setting = this.add.image(675,450,'Setting');
         this.setting.setInteractive().on('pointerdown', () => {
             game.domContainer.style.display = 'block';
@@ -119,23 +124,29 @@ class HomeScreen extends Phaser.Scene{
         this.admobButton.setInteractive().on('pointerdown', () => {
             var date = new Date();
             var month = date.getMonth();
-            if(userData.remove_admob != month){
+            if(!isRewardReady){
+                toast_error(this, 'Reward Video is not ready');
+            }
+            if(userData.remove_admob != month && isRewardReady){
                 AdMob.showRewardVideoAd();
                 AdMob.prepareRewardVideoAd({
                     adId: admobid.interstitial,
                     autoShow:false,
                 });
             }
-            userData.heart = (Number.parseInt(userData.heart) + 3) > 3 ? 3 : (Number.parseInt(userData.heart) + 3);
-            Client.level_end(3, 0, 0, 0);
-            this.play.setInteractive();
-            this.play.setAlpha(1);
-            for(let i=0; i<3; i++)
-            {
-                if(i+1 > userData.heart)
-                    this.hearts[i].setVisible(false);
-                else
-                    this.hearts[i].setVisible(true);
+            if(userData.remove_admob == month || isRewardReady){
+                isRewardReady = false;
+                userData.heart = (Number.parseInt(userData.heart) + 3) > 3 ? 3 : (Number.parseInt(userData.heart) + 3);
+                Client.level_end(3, 0, 0, 0);
+                this.play.setInteractive();
+                this.play.setAlpha(1);
+                for(let i=0; i<3; i++)
+                {
+                    if(i+1 > userData.heart)
+                        this.hearts[i].setVisible(false);
+                    else
+                        this.hearts[i].setVisible(true);
+                }
             }
         });
         this.coinButton = this.add.image(675,575,'ReviveCoin').setScale(0.6);
@@ -196,6 +207,58 @@ class HomeScreen extends Phaser.Scene{
         if(this.waitingText)
         {
             this.waitingText.destroy();
+            
+            let footerObject;
+            if(event_mode == false && userData.username == 'admin')
+            {
+                footerObject = this.add.container(0,0).setSize(1000,100).setDepth(1);
+                this.startButton = this.add.image(-200,0,'24EventStart').setDepth(1).setScale(0.5);
+                this.startButton.setInteractive().on('pointerdown', () => {
+                    Client.event_start();
+                    this.startButton.setAlpha(0.5).disableInteractive();
+                });
+                footerObject.add(this.startButton);
+                let toButton = this.add.image(200,0,'24EventTo').setDepth(1).setScale(0.5);
+                toButton.setInteractive().on('pointerdown', () => {
+                    event_mode = true;
+                    game.scene.stop('HomeScreen');
+                    game.scene.start('HomeScreen');
+                });
+                footerObject.add(toButton);
+                if(event_data.active == true){
+                    this.startButton.setAlpha(0.5).disableInteractive();
+                }
+            } else if (event_mode == false){
+                footerObject = this.add.image(0,0,'24EventTo').setDepth(1).setScale(0.5);
+                footerObject.setInteractive().on('pointerdown', () => {
+                    event_mode = true;
+                    game.scene.stop('HomeScreen');
+                    game.scene.start('HomeScreen');
+                });
+            } else {
+                footerObject = this.add.container(0,0).setSize(1000,100).setDepth(1);
+                this.joinButton = this.add.image(-200,0,'24EventJoin').setDepth(1).setScale(0.5);
+                this.joinButton.setInteractive().on('pointerdown', () => {
+                   Client.join_event();
+                });
+                footerObject.add(this.joinButton);
+                let outbutton = this.add.image(200,0,'24EventOut').setDepth(1).setScale(0.5);
+                outbutton.setInteractive().on('pointerdown', () => {
+                    event_mode = false;
+                    game.scene.stop('HomeScreen');
+                    game.scene.start('HomeScreen');
+                });
+                footerObject.add(outbutton);
+                if(userData.event_joined)
+                {
+                    this.joinButton.setAlpha(0.5).disableInteractive();
+                    // toast_error(this, "You are now joined to 24 Event");
+                }
+                else {
+                    // toast_error(this, "You are not joined to 24 Event");
+                }
+            }
+    
             this.rank_list = this.rexUI.add.scrollablePanel({
                 x: 540,
                 y: 1250,
@@ -247,7 +310,7 @@ class HomeScreen extends Phaser.Scene{
                     header: 10,
                 },
 
-                header: this.add.text(0, 0, 'Live Ranking', { fixedWidth: 1000, fixedHeight: 100 })
+                header: this.add.text(0, 0, event_mode? '24 Event Ranking' : 'Live Ranking', { fixedWidth: 1000, fixedHeight: 100 })
                 .setStyle({
                     fontSize: '64px',
                     fontFamily: 'RR',
@@ -256,13 +319,17 @@ class HomeScreen extends Phaser.Scene{
                     fill: '#fa5c00',
                 })
                 .setOrigin(0.5,0.5),
-                
+
+                footer: footerObject,
+
                 expand: {
                     header: true,
+                    footer: false,
                 },
 
                 align: {
                     header: 'center',
+                    footer: 'center',
                 },
             });
         }
@@ -273,7 +340,7 @@ class HomeScreen extends Phaser.Scene{
         for(let i=0; i<rank_list.length; i++){
             if(rank_list[i].username == userData.username)
             {
-                sizer.add(this.add.text(0, 0, (i+1) + ' - ' + rank_list[i].username + ' (Lv:' + rank_list[i].level + ',' + getTimeTextFromMs(rank_list[i].point) + ')', { fixedWidth: 900, fixedHeight: 80 })
+                sizer.add(this.add.text(0, 0, (i+1) + ' - ' + rank_list[i].username + ' (Lv:' + (event_mode ? rank_list[i].level_24 : rank_list[i].level) + ',' + getTimeTextFromMs(event_mode ? rank_list[i].point_24 : rank_list[i].point) + ')', { fixedWidth: 900, fixedHeight: 80 })
                 .setStyle({
                     fontSize: '48px',
                     fontFamily: 'RR',
@@ -283,7 +350,7 @@ class HomeScreen extends Phaser.Scene{
                 bInRanking = true;
             }
             else{
-                sizer.add(this.add.text(0, 0, (i+1) + ' - ' + rank_list[i].username + ' (Lv:' + rank_list[i].level + ',' + getTimeTextFromMs(rank_list[i].point) + ')', { fixedWidth: 900, fixedHeight: 80 })
+                sizer.add(this.add.text(0, 0, (i+1) + ' - ' + rank_list[i].username + ' (Lv:' + (event_mode ? rank_list[i].level_24 : rank_list[i].level) + ',' + getTimeTextFromMs(event_mode ? rank_list[i].point_24 : rank_list[i].point) + ')', { fixedWidth: 900, fixedHeight: 80 })
                 .setStyle({
                     fontSize: '48px',
                     fontFamily: 'RR',
@@ -293,22 +360,24 @@ class HomeScreen extends Phaser.Scene{
             }
         }
         if(!bInRanking){
-            if(my_rank.ranking < 10){
-                sizer.add(this.add.text(0, 0, '   ...   ', { fixedWidth: 900, fixedHeight: 80 })
+            if(!event_mode && !userData.event_joined){
+                if(my_rank.ranking > 10){
+                    sizer.add(this.add.text(0, 0, '   ...   ', { fixedWidth: 900, fixedHeight: 80 })
+                    .setStyle({
+                        fontSize: '48px',
+                        fontFamily: 'RR',
+                        fontWeight: 'bold',
+                        color: '#ffffff',
+                    }));
+                }
+                sizer.add(this.add.text(0, 0, (my_rank.ranking+1) + ' - ' + userData.username + ' (Lv:' + (event_mode ? userData.level_24 : userData.level)  + ',' + getTimeTextFromMs(event_mode ? userData.point_24 : userData.point) + ')', { fixedWidth: 900, fixedHeight: 80 })
                 .setStyle({
                     fontSize: '48px',
                     fontFamily: 'RR',
                     fontWeight: 'bold',
-                    color: '#ffffff',
+                    color: '#1fbae1',
                 }));
             }
-            sizer.add(this.add.text(0, 0, (my_rank.ranking+1) + ' - ' + userData.username + ' (Lv:' + userData.level + ',' + getTimeTextFromMs(userData.point) + ')', { fixedWidth: 900, fixedHeight: 80 })
-            .setStyle({
-                fontSize: '48px',
-                fontFamily: 'RR',
-                fontWeight: 'bold',
-                color: '#ffffff',
-            }));
         }
         this.rank_list.layout();
         this.rank_list.setSliderEnable(true);
@@ -337,5 +406,4 @@ class HomeScreen extends Phaser.Scene{
             this.play.setAlpha(1);
         }
     }
-
 }

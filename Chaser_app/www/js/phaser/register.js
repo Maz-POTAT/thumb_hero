@@ -142,8 +142,8 @@ class RegisterScreen extends Phaser.Scene{
                 out: 250,
             },
         })
-        .show('Register failed...')
-        .show('UserName Duplicated...')
+        .showMessage('Register failed...')
+        .showMessage('UserName Duplicated...')
     }
 
 }

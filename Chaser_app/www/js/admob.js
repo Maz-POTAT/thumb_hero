@@ -64,6 +64,24 @@ function initApp() {
         autoShow:false,
     });
 
+    document.addEventListener('onAdFailLoad',function(data){
+    });
+    
+    $(document).on('onAdLoaded', function(e){
+        if(typeof e.originalEvent !== 'undefined') e = e.originalEvent;
+        var data = e.data || e;
+        if(data.adType === 'rewardvideo') {
+            isRewardReady = true;
+        }
+    });
+
+    $(document).on('onAdDismiss', function(e){
+        if(typeof e.originalEvent !== 'undefined') e = e.originalEvent;
+        var data = e.data || e;
+        if(data.adType === 'rewardvideo') {
+        }
+    });
+
     // var clientIDs = {
     //     "PayPalEnvironmentProduction": "YOUR_PRODUCTION_KEY", // not needed while testing
     //     "PayPalEnvironmentSandbox": "Ae3IHBOoRz44mIEuahijkFDRtNTSk9sWyVKR4aSLkStKyi9b0a7xoy8d-oJ14z3urCSdNy6u8QDjwlgd"

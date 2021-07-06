@@ -39,6 +39,6 @@ function toast_error(scene, error){
             out: 250,
         },
     }).setDepth(100)
-    .show(error)
+    .showMessage(error)
 }
 

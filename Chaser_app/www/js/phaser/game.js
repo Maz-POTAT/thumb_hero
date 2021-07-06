@@ -416,7 +416,7 @@ class GameScreen extends Phaser.Scene{
                 out: 250,
             },
         })
-        .show('Pass To Next...')
+        .showMessage('Pass To Next...')
     }
 
     updateUser(){

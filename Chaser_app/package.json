@@ -24,12 +24,13 @@
   },
   "cordova": {
     "plugins": {
-      "phonegap-plugin-push": {},
       "cordova-plugin-whitelist": {},
       "cordova-plugin-stripe": {},
       "cordova-plugin-admobpro": {
-        "ADMOB_APP_ID": "ca-app-pub-8779143713246389~2168877819"
-      }
+        "ADMOB_APP_ID": "ca-app-pub-8779143713246389~2168877819",
+        "PLAY_SERVICES_VERSION": "15.0.1"
+      },
+      "phonegap-plugin-push": {}
     },
     "platforms": [
       "android"

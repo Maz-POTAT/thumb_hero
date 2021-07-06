@@ -6,6 +6,9 @@
 var userData = {};
 var stripe_key = "";
 var device_token = '';
+var isRewardReady = false;
+var event_mode = false;
+var event_data = {};
 
 var target_width = 10;
 var target_position = 0;

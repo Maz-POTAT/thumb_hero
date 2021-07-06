@@ -17,9 +17,10 @@ const session = require('express-session')({
     //   maxAge: 1000 * 60 * 10
     // },
 });
+
 const sharedsession = require('express-socket.io-session');
 
-const port = process.env.PORT || 5555;
+const port = process.env.PORT || 4444;
 
 const baseUrl = '0.0.0.0';
 // const baseUrl = 'quizpuzzle.chileracing.net'

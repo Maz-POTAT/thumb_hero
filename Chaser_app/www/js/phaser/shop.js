@@ -173,7 +173,7 @@ class ShopScreen extends Phaser.Scene{
                 out: 250,
             },
         })
-        .show('Please Select Method...')
+        .showMessage('Please Select Method...')
     }
 
     createLabel(text) {

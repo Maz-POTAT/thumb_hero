@@ -2,26 +2,31 @@ const data = require('./data');
 const gcm = require('node-gcm'); //Google Cloud Messaging
 const gcmKey = 'AAAAkjV9r0s:APA91bGH95ayi0TGgKSIybhQG_qu1fJfWrQgcfTqqS0YJ0qCHtpPrmtnTq5YmD5-tjIotWFfnAwcsAES5tbS17RuzM3wwap3yWb0vLAbS9IXr-4G6mZvyw2nmqPFk3WStFa6R8RyQJvF'; // Your gcm key in quotes
 const sender = new gcm.Sender(gcmKey);
+const mongoCollections = require('./config/mongoCollections');
+const usersCollection = mongoCollections.users;
 
 const users = data.users;
 
 const players = {};
+const event_data = { active : false, end_time: undefined };
 
 const exportedMethods = {
     async onTimeInteval(io) {
         var date = new Date();
         var hour = date.getHours();
         var minute = date.getMinutes();
+        var day = date.getDate();
+
         let result = await users.getAllUsers();
         if (result)
             result.map((user, index) => {
                 if (hour == 18 && minute == 00){
-                    users.ranking(user.username).then((result) => {
+                    users.ranking(user.username, 'normal', event_data).then((result) => {
                         if(result){
                             var message = new gcm.Message();
                             message.addData({
                               title: 'New Rank',
-                              body: 'Your current rank is ' + result.my_rank[0].ranking+1,
+                              body: 'Your current rank is ' + (result.my_rank[0].ranking+1),
                               otherProperty: true,
                             });
                             sender.send(message, {registrationIds: [result.user.device_token]}, (err) => {
@@ -36,7 +41,7 @@ const exportedMethods = {
                     });
                 }
                 if (user.heart < 3 && (user.revive>hour || (hour-user.revive) >1)) {
-                    const info = users.addUserValue(user.username, { heart: 3 });
+                    const info = users.addUserValue(user.username, 'normal', { heart: 3 }, event_data);
                     if (!info) console.log('Error occured whild addHeart');
                     else{
                         if(players[user.username])
@@ -61,6 +66,21 @@ const exportedMethods = {
                     }
                 }
             });
+
+        if(event_data.active == true && event_data.end_time.getHours() == hour && event_data.end_time.getMinutes() == minute && event_data.end_time.getDate() == day ){
+            event_data.active = false;
+            let result = await users.getAllUsers();
+            const userCollection = await usersCollection();
+            if (result)
+                result.map(async (user, index) => {
+                    user.event_joined = false;
+                    let updatedUser = await userCollection.updateOne({ _id: user._id }, { $set: user });
+
+                    if (updatedUser.modifiedCount === 0) {
+                        console.log('could not update UserValue successfully', updatedUser);
+                    }
+                });
+        }
         console.log('Hearts supplied.');
     },
 
@@ -73,12 +93,59 @@ const exportedMethods = {
                 players[username] = socket.id;
             }
 
+            socket.on('event_start', async () => {
+                if(event_data.active)
+                    return;
+                event_data.active = true;
+                let end_date = new Date();
+                end_date.setDate(end_date.getDate() + 1);
+                event_data.end_time = end_date;
+                const userCollection = await usersCollection();
+                let result = await users.getAllUsers();
+                if (result)
+                    result.map(async (user, index) => {
+                        user.event_joined = false;
+                        user.level_24 = 0;
+                        user.point_24 = 0;
+                        let updatedUser = await userCollection.updateOne({ _id: user._id }, { $set: user });
+
+                        if (updatedUser.modifiedCount === 0) {
+                            console.log('could not update UserValue successfully', updatedUser);
+                        }
+                        var message = new gcm.Message();
+                        message.addData({
+                          title: '24 Event Started',
+                          body: 'Try 24 Event and get prize!',
+                          otherProperty: true,
+                        });
+                        sender.send(message, {registrationIds: [user.device_token]}, (err) => {
+                          if (err) {
+                            console.error(err);
+                          }
+                          else {
+                            console.log('24 Event Sent');
+                          }
+                        });
+                    });
+            });
+
             socket.on('disconnect', () => {
                 console.log('user disconnected');
                 if (socket.handshake.session.username) {
                     const username = socket.handshake.session.username;
                     players[username] = undefined;
                 }
+            });
+
+            socket.on('join_event', (data) => {
+                users.joinEvent(data.username).then((result) => {
+                    if(result == false){
+                        socket.emit('join_event', {result: false});
+                    }
+                    else{
+                        socket.emit('join_event', {result: true, userData: result});
+                    }
+                });
             });
 
             socket.on('login', (data) => {
@@ -155,7 +222,7 @@ const exportedMethods = {
 
             socket.on('level_end', (data) => {
                 console.log('level_end request recevied : ', data);
-                users.addUserValue(data.username, data.result).then((result) => {
+                users.addUserValue(data.username, data.game_type, data.result, event_data).then((result) => {
                 });
             });
 
@@ -179,9 +246,9 @@ const exportedMethods = {
 
             socket.on('ranking', (data) => {
                 console.log('ranking request recevied : ', data);
-                users.ranking(data.username).then((result) => {
+                users.ranking(data.username, data.game_type, event_data).then((result) => {
                     if(result){
-                        socket.emit('ranking', {result: true, my_rank: result.my_rank[0], rank_list:result.rank_list});
+                        socket.emit('ranking', {result: true, my_rank: result.my_rank[0], rank_list:result.rank_list, event_data: event_data});
                     } else {
                         socket.emit('ranking', {result: false, error: `Error occurred while get ranking in db`});
                     }

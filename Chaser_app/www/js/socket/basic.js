@@ -3,11 +3,19 @@
  */
 
 var Client = {};
-// Client.socket = io("http://192.168.104.55:5555/");
-Client.socket = io("http://185.108.171.161:5555/");
+Client.socket = io("http://192.168.104.74:4444/");
+// Client.socket = io("http://185.108.171.161:4444/");
 
 Client.login = function(username, password){
     Client.socket.emit('login', {username: username, password: password});
+};
+
+Client.event_start = function(){
+    Client.socket.emit('event_start', {});
+};
+
+Client.join_event = function(){
+    Client.socket.emit('join_event', {username: userData.username});
 };
 
 Client.register_device = function(){
@@ -27,7 +35,7 @@ Client.register = function(username, email, password){
 };
 
 Client.ranking = function(){
-    Client.socket.emit('ranking', {username: userData.username});
+    Client.socket.emit('ranking', {username: userData.username, game_type: event_mode? '24_event' : 'normal'});
 }
 
 Client.user_data = function(avatar){
@@ -78,13 +86,34 @@ Client.socket.on('update_userdata',function(data){
     if(game.scene.isActive('GameScreen'))
         game.scene.getScene('GameScreen').updateUser();
     if(game.scene.isActive('SettingScreen'))
-        game.scene.getScene('GameScreen').updateUser();
+        game.scene.getScene('SettingScreen').updateUser();
     if(game.scene.isActive('EndScreen'))
-        game.scene.getScene('GameScreen').updateUser();
+        game.scene.getScene('EndScreen').updateUser();
 });
 
 Client.socket.on('ranking',function(data){
-    if(game.scene.isActive('HomeScreen'))
-        game.scene.getScene('HomeScreen').updateRanking(data.my_rank, data.rank_list);
+    if(data.result){
+        event_data = data.event_data;
+        if(game.scene.isActive('HomeScreen'))
+            game.scene.getScene('HomeScreen').updateRanking(data.my_rank, data.rank_list);
+    }
+    else{
+
+    }
 });
+
+Client.socket.on('join_event',function(data){
+    if(data.result == false){
+        toast_error(game.scene.getScene('HomeScreen'), "You need at least 4000\ncoinsto enter\nevent!");
+        return;
+    }
+
+    userData = data.userData;
+    if(game.scene.isActive('HomeScreen'))
+    {
+        game.scene.stop('HomeScreen');
+        game.scene.start('HomeScreen');
+    }
+});
+
 

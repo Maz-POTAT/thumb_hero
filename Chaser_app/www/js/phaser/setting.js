@@ -69,21 +69,27 @@ class SettingScreen extends Phaser.Scene{
         this.admobButton.setInteractive().on('pointerdown', () => {
             var date = new Date();
             var month = date.getMonth();
-            if(userData.remove_admob != month){
+            if(!isRewardReady){
+                toast_error(this, 'Reward Video is not ready');
+            }
+            if(userData.remove_admob != month && isRewardReady){
                 AdMob.showRewardVideoAd();
                 AdMob.prepareRewardVideoAd({
                     adId: admobid.interstitial,
                     autoShow:false,
                 });
             }
-            userData.heart = (Number.parseInt(userData.heart) + 3) > 3 ? 3 : (Number.parseInt(userData.heart) + 3);
-            Client.level_end(3, 0, 0, 0);
-            for(let i=0; i<3; i++)
-            {
-                if(i+1 > userData.heart)
-                    this.hearts[i].setVisible(false);
-                else
-                    this.hearts[i].setVisible(true);
+            if(userData.remove_admob == month || isRewardReady){
+                isRewardReady = false;
+                userData.heart = (Number.parseInt(userData.heart) + 3) > 3 ? 3 : (Number.parseInt(userData.heart) + 3);
+                Client.level_end(3, 0, 0, 0);
+                for(let i=0; i<3; i++)
+                {
+                    if(i+1 > userData.heart)
+                        this.hearts[i].setVisible(false);
+                    else
+                        this.hearts[i].setVisible(true);
+                }
             }
         });
         this.coinButton = this.add.image(810,490,'ReviveCoin').setScale(0.7);

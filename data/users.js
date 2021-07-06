@@ -73,6 +73,35 @@ const exportedMethods = {
         return user;
     },
 
+    async joinEvent(username) {
+        if (!username) {
+            // console.log('Error: username is not referred while getUserInfo');
+            return false;
+        }
+
+        const userCollection = await users();
+        let user = await userCollection.findOne({ username: username });
+
+        if (!user) {
+            // console.log(`Error: user "${username}" not exist while getUserInfo`);
+            return false;
+        }
+
+        if(user.coin > 4000){
+            user.coin -= 4000;
+            user.event_joined = true;
+            let updatedInfo = await userCollection.updateOne({ _id: user._id }, { $set: user });
+
+            if (updatedInfo.modifiedCount === 0) {
+                console.log('could not update UserValue successfully');
+                return false;
+            }
+        } else {
+            return false;
+        }
+        return user;
+    },
+
     async addUser(data) {
         if (data.username === undefined || data.password === undefined || data.email === undefined) {
             // console.log("Failed in AddUser! Username or Password is undefined");
@@ -82,17 +111,20 @@ const exportedMethods = {
         const userCollection = await users();
 
         const newuser = {
-            username: data.username,
+            username: data.username.trim(),
             password: data.password,
             email: data.email,
             avatar: 0,
-            point: 0,
             heart: 3,
             coin: 20000,
             revive: 24,
             remove_admob: 0,
-            level:0,
+            level: 0,
+            point: 0,
+            level_24: 0,
+            point_24: 0,
             device_token:'',
+            event_joined: false,
         };
 
         const newInsertInformation = await userCollection.insertOne(newuser);
@@ -103,7 +135,7 @@ const exportedMethods = {
         return true;
     },
 
-    async addUserValue(username, data) {
+    async addUserValue(username, game_type, data, event_data) {
         if (!username || !data) {
             console.log('ReferenceError: Username is not supplied while addUserValue');
             return false;
@@ -117,15 +149,29 @@ const exportedMethods = {
             return false;
         }
 
+        if(event_data.active == true  && game_type == '24_event' && !user.event_joined)
+            return;
+
         const updateduserData = user;
 
         if (data.coin) updateduserData.coin = Number.parseInt(updateduserData.coin) + data.coin;
-        if (data.level > updateduserData.level && data.point>0){
-            updateduserData.level = data.level;
-            updateduserData.point = data.point;
-        } 
-        else if (data.level == updateduserData.level && data.point < updateduserData.point && data.point>0){
-            updateduserData.point = data.point;
+        if(game_type == 'normal'){
+            if (data.level > updateduserData.level && data.point>0){
+                updateduserData.level = data.level;
+                updateduserData.point = data.point;
+            } 
+            else if (data.level == updateduserData.level && data.point < updateduserData.point && data.point>0){
+                updateduserData.point = data.point;
+            }
+        }
+        else if(game_type == '24_event'){
+            if (data.level > updateduserData.level_24 && data.point>0){
+                updateduserData.level_24 = data.level;
+                updateduserData.point_24 = data.point;
+            } 
+            else if (data.level == updateduserData.level_24 && data.point < updateduserData.point_24 && data.point>0){
+                updateduserData.point_24 = data.point;
+            }
         }
         if (data.heart!=0)
         {
@@ -338,7 +384,7 @@ const exportedMethods = {
         return true;
     },
 
-    async ranking(username) {
+    async ranking(username, game_type, event_data) {
         if (!username) {
             console.log('ReferenceError: Username is not supplied while addUserValue');
             return false;
@@ -347,16 +393,21 @@ const exportedMethods = {
         const userCollection = await users();
         const user = await userCollection.findOne({ username: username });
         const my_rank = await userCollection.aggregate(
-            { $sort : {"level": -1, "point" : 1}},
+            { $sort : game_type == 'normal' ? {"level": -1, "point" : 1} : {"level_24": -1, "point_24" : 1}},
             {
                 "$group": {
                     "_id": false,
                     "users": {
-                        "$push": {
+                        "$push": game_type == 'normal' ? {
                             "_id": "$_id",
                             "username": "$username",
                             "level": "$level",
                             "point": "$point"
+                        } : {
+                            "_id": "$_id",
+                            "username": "$username",
+                            "level_24": "$level_24",
+                            "point_24": "$point_24"
                         }
                     }
                 }
@@ -374,7 +425,11 @@ const exportedMethods = {
             },
             { $sort : {"ranking" : 1}}).toArray();
 
-        const rank_list = await userCollection.find().sort({level: -1, point:1}).limit(10).toArray();
+        let rank_list = [];
+        if(game_type != 'normal')
+            rank_list = await userCollection.find({event_joined:true}).sort({level_24: -1, point_24:1}).limit(10).toArray();
+        else
+            rank_list = await userCollection.find().sort({level: -1, point:1}).limit(10).toArray();
         return {user: user, my_rank: my_rank, rank_list: rank_list};
     },
 };

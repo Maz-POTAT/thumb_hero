@@ -62,6 +62,10 @@ class LoginScreen extends Phaser.Scene{
         this.load.image("Gold10000Up", "./images/gold10000_up.png");
         this.load.image("Help", "./images/help.png");
         this.load.image("Logout", "./images/logout.png");
+        this.load.image("24EventTo", "./images/24event_to.png");
+        this.load.image("24EventOut", "./images/24event_out.png");
+        this.load.image("24EventJoin", "./images/24event_join.png");
+        this.load.image("24EventStart", "./images/24event_start.png");
 
         for(let i=0; i<10; i++){
             this.load.image("Avatar_" + i, "./images/avatar/" + i + ".png");
@@ -183,8 +187,8 @@ class LoginScreen extends Phaser.Scene{
                 out: 250,
             },
         })
-        .show('Login failed...')
-        .show('Correct infomation...')
+        .showMessage('Login failed...')
+        .showMessage('Correct infomation...')
     }
 
     toast_register_succeed(){
@@ -209,6 +213,6 @@ class LoginScreen extends Phaser.Scene{
                 out: 250,
             },
         })
-        .show('Sign Up succeed...')
+        .showMessage('Sign Up succeed...')
     }
 }
