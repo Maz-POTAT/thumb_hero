@@ -419,8 +419,11 @@ const exportedMethods = {
                 }
             },
             {
-                "$match": {
+                "$match": game_type == 'normal' ? {
                     "users.username": username
+                } : {
+                    "users.username": username,
+                    "users.event_joined": true
                 }
             },
             { $sort : {"ranking" : 1}}).toArray();

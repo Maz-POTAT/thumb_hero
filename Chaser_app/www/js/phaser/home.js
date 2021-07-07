@@ -138,8 +138,10 @@ class HomeScreen extends Phaser.Scene{
                 isRewardReady = false;
                 userData.heart = (Number.parseInt(userData.heart) + 3) > 3 ? 3 : (Number.parseInt(userData.heart) + 3);
                 Client.level_end(3, 0, 0, 0);
-                this.play.setInteractive();
-                this.play.setAlpha(1);
+                if(event_mode == false || userData.event_joined == true){
+                    this.play.setInteractive();
+                    this.play.setAlpha(1);
+                }
                 for(let i=0; i<3; i++)
                 {
                     if(i+1 > userData.heart)
@@ -154,8 +156,10 @@ class HomeScreen extends Phaser.Scene{
             userData.coin = Number.parseInt(userData.coin) - 1000;
             userData.heart = (Number.parseInt(userData.heart) + 3) > 3 ? 3 : (Number.parseInt(userData.heart) + 3);
             Client.level_end(3, -1000, 0, 0);
-            this.play.setInteractive();
-            this.play.setAlpha(1);
+            if(event_mode == false || userData.event_joined == true){
+                this.play.setInteractive();
+                this.play.setAlpha(1);
+            }
             for(let i=0; i<3; i++)
             {
                 if(i+1 > userData.heart)
@@ -249,7 +253,7 @@ class HomeScreen extends Phaser.Scene{
                     game.scene.start('HomeScreen');
                 });
                 footerObject.add(outbutton);
-                if(userData.event_joined)
+                if(event_data.active == false || userData.event_joined)
                 {
                     this.joinButton.setAlpha(0.5).disableInteractive();
                     // toast_error(this, "You are now joined to 24 Event");
@@ -259,6 +263,16 @@ class HomeScreen extends Phaser.Scene{
                 }
             }
     
+            this.headObject = this.add.text(0, 0, event_mode? '24 Event Ranking' : 'Live Ranking', { fixedWidth: 1000, fixedHeight: 100 })
+            .setStyle({
+                fontSize: '64px',
+                fontFamily: 'RR',
+                fontWeight: 'bold',
+                align: "center",
+                fill: '#fa5c00',
+            }).setDepth(1)
+            .setOrigin(0.5,0.5);
+
             this.rank_list = this.rexUI.add.scrollablePanel({
                 x: 540,
                 y: 1250,
@@ -310,15 +324,7 @@ class HomeScreen extends Phaser.Scene{
                     header: 10,
                 },
 
-                header: this.add.text(0, 0, event_mode? '24 Event Ranking' : 'Live Ranking', { fixedWidth: 1000, fixedHeight: 100 })
-                .setStyle({
-                    fontSize: '64px',
-                    fontFamily: 'RR',
-                    fontWeight: 'bold',
-                    align: "center",
-                    fill: '#fa5c00',
-                })
-                .setOrigin(0.5,0.5),
+                header: this.headObject,
 
                 footer: footerObject,
 
@@ -383,6 +389,24 @@ class HomeScreen extends Phaser.Scene{
         this.rank_list.setSliderEnable(true);
         this.rank_list.setScrollerEnable(true);
         game.domContainer.style.display = 'none';
+        if(event_mode && event_data.active){
+            this.timer = this.time.addEvent({
+                delay: 1000,
+                callback: this.updateTimer,
+                args: [this],
+                loop: true
+            });
+        }
+    }
+
+    updateTimer(scene){
+        let currentTime = new Date();
+        let end_time = new Date(event_data.end_time);
+        if(end_time <= currentTime)
+            scene.headObject.setText('24 Event Ranking ( Closed )');
+        else{
+            scene.headObject.setText('24 Event Ranking ( ' + getDateTimeTextFromMs(end_time.getTime() - currentTime.getTime()) + ')');
+        }
     }
 
     updateUser(){
@@ -402,8 +426,10 @@ class HomeScreen extends Phaser.Scene{
         }
         else
         {
-            this.play.setInteractive();
-            this.play.setAlpha(1);
+            if(event_mode == false || userData.event_joined == true){
+                this.play.setInteractive();
+                this.play.setAlpha(1);
+            }
         }
     }
 }

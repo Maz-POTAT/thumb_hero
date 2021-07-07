@@ -94,6 +94,7 @@ Client.socket.on('update_userdata',function(data){
 Client.socket.on('ranking',function(data){
     if(data.result){
         event_data = data.event_data;
+        userData = data.user;
         if(game.scene.isActive('HomeScreen'))
             game.scene.getScene('HomeScreen').updateRanking(data.my_rank, data.rank_list);
     }

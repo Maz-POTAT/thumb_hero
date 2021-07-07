@@ -50,6 +50,18 @@ function getTimeTextFromMs(msSec){
         String(ms).padStart(2, '0'),
       ].join(':');
 }
+function getDateTimeTextFromMs(msSec){
+    let sec = Math.floor(msSec/1000);
+    let min = Math.floor(sec/60);
+    let hour = Math.floor(min/60);
+    min = min%60;
+    sec = sec%60;
+    return [
+        String(hour).padStart(2, '0'),
+        String(min).padStart(2, '0'),
+        String(sec).padStart(2, '0'),
+      ].join(':');
+}
 document.addEventListener('deviceready', onDeviceReady, false);
 
 function onDeviceReady() {

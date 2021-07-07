@@ -40,6 +40,26 @@ const exportedMethods = {
                         }
                     });
                 }
+                if (hour == 20 && minute == 00 && event_data.active){
+                    users.ranking(user.username, '24_event', event_data).then((result) => {
+                        if(result && result.user.event_joined){
+                            var message = new gcm.Message();
+                            message.addData({
+                              title: 'New Rank',
+                              body: 'Your current rank in Event is ' + (result.my_rank[0].ranking+1),
+                              otherProperty: true,
+                            });
+                            sender.send(message, {registrationIds: [result.user.device_token]}, (err) => {
+                              if (err) {
+                                console.error(err);
+                              }
+                              else {
+                                console.log('Sent');
+                              }
+                            });
+                        }
+                    });
+                }
                 if (user.heart < 3 && (user.revive>hour || (hour-user.revive) >1)) {
                     const info = users.addUserValue(user.username, 'normal', { heart: 3 }, event_data);
                     if (!info) console.log('Error occured whild addHeart');
@@ -69,17 +89,17 @@ const exportedMethods = {
 
         if(event_data.active == true && event_data.end_time.getHours() == hour && event_data.end_time.getMinutes() == minute && event_data.end_time.getDate() == day ){
             event_data.active = false;
-            let result = await users.getAllUsers();
-            const userCollection = await usersCollection();
-            if (result)
-                result.map(async (user, index) => {
-                    user.event_joined = false;
-                    let updatedUser = await userCollection.updateOne({ _id: user._id }, { $set: user });
+            // let result = await users.getAllUsers();
+            // const userCollection = await usersCollection();
+            // if (result)
+            //     result.map(async (user, index) => {
+            //         user.event_joined = false;
+            //         let updatedUser = await userCollection.updateOne({ _id: user._id }, { $set: user });
 
-                    if (updatedUser.modifiedCount === 0) {
-                        console.log('could not update UserValue successfully', updatedUser);
-                    }
-                });
+            //         if (updatedUser.modifiedCount === 0) {
+            //             console.log('could not update UserValue successfully');
+            //         }
+            //     });
         }
         console.log('Hearts supplied.');
     },
@@ -98,7 +118,7 @@ const exportedMethods = {
                     return;
                 event_data.active = true;
                 let end_date = new Date();
-                end_date.setDate(end_date.getDate() + 1);
+                end_date.setMinutes(end_date.getMinutes() + 1);
                 event_data.end_time = end_date;
                 const userCollection = await usersCollection();
                 let result = await users.getAllUsers();
@@ -248,9 +268,9 @@ const exportedMethods = {
                 console.log('ranking request recevied : ', data);
                 users.ranking(data.username, data.game_type, event_data).then((result) => {
                     if(result){
-                        socket.emit('ranking', {result: true, my_rank: result.my_rank[0], rank_list:result.rank_list, event_data: event_data});
+                        socket.emit('ranking', {result: true, my_rank: result.my_rank[0], rank_list:result.rank_list, event_data: event_data, user: result.user});
                     } else {
-                        socket.emit('ranking', {result: false, error: `Error occurred while get ranking in db`});
+                        socket.emit('ranking', {result: false, error: `Error occurred while get ranking in db`, user: result.user});
                     }
                 });
             });
