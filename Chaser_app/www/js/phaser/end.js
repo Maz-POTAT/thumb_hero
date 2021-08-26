@@ -93,39 +93,42 @@ class EndScreen extends Phaser.Scene{
                 AdMob.prepareRewardVideoAd({
                     adId: admobid.interstitial,
                     autoShow:false,
+                    user_id: userData.username,
                 });
             }
             if(userData.remove_admob == month || isRewardReady){
                 isRewardReady = false;
-                userData.heart = (Number.parseInt(userData.heart) + 3) > 3 ? 3 : (Number.parseInt(userData.heart) + 3);
-                Client.level_end(3, 0, 0, 0);
-                for(let i=0; i<3; i++)
-                {
-                    if(i+1 > userData.heart)
-                        this.hearts[i].setVisible(false);
-                    else
-                        this.hearts[i].setVisible(true);
-                }
-                this.admobButton.disableInteractive();
-                this.admobButton.setAlpha(0.5);
-                this.coinButton.disableInteractive();
-                this.coinButton.setAlpha(0.5);
-                this.revive_audio.play();
-                revive_count++;
-                if(revive_count<2){
-                    game.scene.stop('EndScreen');
-                    game.scene.start('GameScreen');
-                } else{
-                    target_width = 20;
-                    target_position = Math.floor(Math.random() * 280) + 40;
-                    // target_position = 320;
-                    path_index = 0;
-                    level = 2;
-                    revive_count = 0;
-                    elapsedTime = 0;
-    
-                    game.scene.stop('EndScreen');
-                    game.scene.start('GameScreen');
+                if(userData.remove_admob == month){
+                    userData.heart = (Number.parseInt(userData.heart) + 3) > 3 ? 3 : (Number.parseInt(userData.heart) + 3);
+                    Client.level_end(3, 0, 0, 0);
+                    for(let i=0; i<3; i++)
+                    {
+                        if(i+1 > userData.heart)
+                            this.hearts[i].setVisible(false);
+                        else
+                            this.hearts[i].setVisible(true);
+                    }
+                    this.admobButton.disableInteractive();
+                    this.admobButton.setAlpha(0.5);
+                    this.coinButton.disableInteractive();
+                    this.coinButton.setAlpha(0.5);
+                    this.revive_audio.play();
+                    revive_count++;
+                    if(revive_count<2){
+                        game.scene.stop('EndScreen');
+                        game.scene.start('GameScreen');
+                    } else{
+                        target_width = 20;
+                        target_position = Math.floor(Math.random() * 280) + 40;
+                        // target_position = 320;
+                        path_index = 0;
+                        level = 2;
+                        revive_count = 0;
+                        elapsedTime = 0;
+        
+                        game.scene.stop('EndScreen');
+                        game.scene.start('GameScreen');
+                    }
                 }
             }
         });
@@ -205,6 +208,29 @@ class EndScreen extends Phaser.Scene{
         if(Number.parseInt(userData.coin)>=1000){
             this.coinButton.setInteractive();
             this.coinButton.setAlpha(1.0);
+        }
+        if(userData.heart>=3){
+            this.admobButton.disableInteractive();
+            this.admobButton.setAlpha(0.5);
+            this.coinButton.disableInteractive();
+            this.coinButton.setAlpha(0.5);
+            this.revive_audio.play();
+            revive_count++;
+            if(revive_count<2){
+                game.scene.stop('EndScreen');
+                game.scene.start('GameScreen');
+            } else{
+                target_width = 20;
+                target_position = Math.floor(Math.random() * 280) + 40;
+                // target_position = 320;
+                path_index = 0;
+                level = 2;
+                revive_count = 0;
+                elapsedTime = 0;
+
+                game.scene.stop('EndScreen');
+                game.scene.start('GameScreen');
+            }
         }
     }
 }

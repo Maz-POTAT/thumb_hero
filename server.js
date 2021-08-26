@@ -5,7 +5,15 @@ const ejs = require('ejs');
 const expressLayouts = require('express-ejs-layouts');
 const app = express();
 const server = require('http').Server(app);
-const io = require('socket.io')(server);
+const io = require('socket.io')(server
+    // ,{
+    // cors: {
+    //   origin: "https://thumbhero.kings-guardians.com",
+    //   methods: ["GET", "POST"],
+    //   allowedHeaders: ["thumbhero-header"],
+    //   credentials: true
+    // }}
+    );
 
 const socketSrc = require('./socket');
 
@@ -20,8 +28,9 @@ const session = require('express-session')({
 
 const sharedsession = require('express-socket.io-session');
 
-const port = process.env.PORT || 4444;
+const port = process.env.PORT || 20001;
 
+// const baseUrl = '192.168.119.30';
 const baseUrl = '0.0.0.0';
 // const baseUrl = 'quizpuzzle.chileracing.net'
 
@@ -33,6 +42,12 @@ app.get('/', (req, res) => {
     req.session.game_exists = false;
     res.sendFile(__dirname + '/Chaser_app/www/index.html');
 });
+
+app.get('/reward', (req, res) => {
+    console.log(req.body);
+    res.status(200).send();
+});
+
 app.use(expressLayouts);
 app.use(express.urlencoded({ extended: true }));
 

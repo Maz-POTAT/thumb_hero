@@ -59,11 +59,6 @@ function initApp() {
     // } );
     // AdMob.showBanner(AdMob.AD_POSITION.BOTTOM_CENTER);
 
-    AdMob.prepareRewardVideoAd({
-        adId: admobid.interstitial,
-        autoShow:false,
-    });
-
     document.addEventListener('onAdFailLoad',function(data){
     });
     

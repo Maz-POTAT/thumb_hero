@@ -3,8 +3,19 @@
  */
 
 var Client = {};
-// Client.socket = io("http://192.168.104.74:4444/");
-Client.socket = io("http://185.108.171.161:4444/");
+// Client.socket = io("https://thumbhero.kings-guardians.com:5555/"
+// //     , {
+// //     withCredentials: true,
+// //     extraHeaders: {
+// //       "thumbhero-header": "secure"
+// //     }
+// //   }
+//   );
+
+Client.socket = io("https://thumbhero.kings-guardians.com:5555");
+
+// Client.socket = io("http://192.168.104.74:5555/");
+// Client.socket = io("https://thumbhero.kings-guardians.com:5555");
 
 Client.login = function(username, password){
     Client.socket.emit('login', {username: username, password: password});
@@ -55,6 +66,12 @@ Client.socket.on('login',function(data){
             Client.register_device();
         game.scene.stop('LoginScreen');
         game.scene.start('HomeScreen');
+        AdMob.prepareRewardVideoAd({
+            adId: admobid.interstitial,
+            autoShow:false,
+            user_id: userData.username,
+        });
+    
         console.log('success');
     }
     else

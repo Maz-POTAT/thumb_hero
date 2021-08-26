@@ -77,18 +77,21 @@ class SettingScreen extends Phaser.Scene{
                 AdMob.prepareRewardVideoAd({
                     adId: admobid.interstitial,
                     autoShow:false,
+                    user_id: userData.username,
                 });
             }
             if(userData.remove_admob == month || isRewardReady){
                 isRewardReady = false;
-                userData.heart = (Number.parseInt(userData.heart) + 3) > 3 ? 3 : (Number.parseInt(userData.heart) + 3);
-                Client.level_end(3, 0, 0, 0);
-                for(let i=0; i<3; i++)
-                {
-                    if(i+1 > userData.heart)
-                        this.hearts[i].setVisible(false);
-                    else
-                        this.hearts[i].setVisible(true);
+                if(userData.remove_admob == month){
+                    userData.heart = (Number.parseInt(userData.heart) + 3) > 3 ? 3 : (Number.parseInt(userData.heart) + 3);
+                    Client.level_end(3, 0, 0, 0);
+                    for(let i=0; i<3; i++)
+                    {
+                        if(i+1 > userData.heart)
+                            this.hearts[i].setVisible(false);
+                        else
+                            this.hearts[i].setVisible(true);
+                    }
                 }
             }
         });

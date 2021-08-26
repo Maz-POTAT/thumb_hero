@@ -118,7 +118,7 @@ const exportedMethods = {
                     return;
                 event_data.active = true;
                 let end_date = new Date();
-                end_date.setMinutes(end_date.getMinutes() + 1);
+                end_date.setDate(end_date.getDate() + 1);
                 event_data.end_time = end_date;
                 const userCollection = await usersCollection();
                 let result = await users.getAllUsers();
